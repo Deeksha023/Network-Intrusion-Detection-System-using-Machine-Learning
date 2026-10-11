@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
-import { Play, Square, Wifi, AlertTriangle } from 'lucide-react'
+import { Play, Square, Wifi, AlertTriangle, X } from 'lucide-react'
 import apiClient from '../api/client'
 import type { NetworkInterface, MonitorStatus, Alert } from '../types'
 
@@ -225,15 +224,25 @@ export default function LiveMonitorPanel({ onAlertSelect: _onAlertSelect }: Live
       {/* Error Alert Banner */}
       {errorMsg && (
         <div
-          className="flex items-center gap-2.5 p-3 rounded-lg text-[12px] font-mono mb-4"
+          className="flex items-center justify-between gap-2.5 p-3 rounded-lg text-[12px] font-mono mb-4"
           style={{
             backgroundColor: 'var(--crit-dim)',
             border: '1px solid var(--crit-border)',
             color: 'var(--crit)',
           }}
         >
-          <AlertTriangle size={14} className="shrink-0" />
-          <span>{errorMsg}</span>
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle size={14} className="shrink-0" />
+            <span>{errorMsg}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setErrorMsg(null)}
+            className="hover:opacity-80 p-0.5 cursor-pointer text-inherit ml-2"
+            title="Dismiss notice"
+          >
+            <X size={14} />
+          </button>
         </div>
       )}
 

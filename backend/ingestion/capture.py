@@ -336,6 +336,7 @@ class LiveCaptureEngine:
 
     def stop(self) -> Dict[str, Any]:
         with self._lock:
+            self.error_message = None
             if not self.active and (not self._sniffer or not getattr(self._sniffer, 'running', False)):
                 return {"status": "success", "message": "Monitoring is not currently active", "active": False}
 
