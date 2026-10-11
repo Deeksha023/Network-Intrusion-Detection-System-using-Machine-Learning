@@ -71,6 +71,16 @@ async def stop_live_monitoring() -> Dict[str, Any]:
     return engine.stop()
 
 
+@router.post("/monitor/clear-error", summary="Clear live capture error banner")
+async def clear_live_monitoring_error() -> Dict[str, Any]:
+    """
+    Clear any sticky error message in the live capture engine.
+    """
+    engine = LiveCaptureEngine()
+    engine.clear_error()
+    return {"status": "success", "message": "Error cleared"}
+
+
 @router.get("/monitor/status", summary="Get live monitoring telemetry & status")
 async def get_monitoring_status(session: AsyncSession = Depends(get_db)) -> Dict[str, Any]:
     """

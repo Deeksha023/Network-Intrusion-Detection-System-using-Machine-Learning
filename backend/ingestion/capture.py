@@ -334,6 +334,10 @@ class LiveCaptureEngine:
                 "interface": interface_name,
             }
 
+    def clear_error(self) -> None:
+        with self._lock:
+            self.error_message = None
+
     def stop(self) -> Dict[str, Any]:
         with self._lock:
             self.error_message = None

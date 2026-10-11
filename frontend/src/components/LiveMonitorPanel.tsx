@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Play, Square, Wifi, AlertTriangle, X } from 'lucide-react'
 import apiClient from '../api/client'
 import type { NetworkInterface, MonitorStatus, Alert } from '../types'
@@ -18,6 +18,7 @@ export default function LiveMonitorPanel({ onAlertSelect: _onAlertSelect }: Live
   const [status, setStatus] = useState<MonitorStatus | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const isDismissedRef = useRef<boolean>(false)
 
   // Fetch available network interfaces
   const fetchInterfaces = useCallback(async () => {
@@ -46,9 +47,9 @@ export default function LiveMonitorPanel({ onAlertSelect: _onAlertSelect }: Live
     try {
       const res = await apiClient.get<MonitorStatus>('/monitor/status')
       setStatus(res.data)
-      if (res.data.error_message) {
+      if (res.data.error_message && !isDismissedRef.current) {
         setErrorMsg(res.data.error_message)
-      } else {
+      } else if (!res.data.error_message) {
         setErrorMsg(null)
       }
       if (res.data.interface && res.data.active) {
@@ -66,7 +67,18 @@ export default function LiveMonitorPanel({ onAlertSelect: _onAlertSelect }: Live
     return () => window.clearInterval(timer)
   }, [fetchInterfaces, fetchStatus])
 
+  const handleDismiss = async () => {
+    isDismissedRef.current = true
+    setErrorMsg(null)
+    try {
+      await apiClient.post('/monitor/clear-error')
+    } catch {
+      // ignore
+    }
+  }
+
   const handleStart = async () => {
+    isDismissedRef.current = false
     const ifaceToUse = selectedIface || (interfaces.length > 0 ? interfaces[0].name : 'Wi-Fi')
     setLoading(true)
     setErrorMsg(null)
@@ -238,7 +250,7 @@ export default function LiveMonitorPanel({ onAlertSelect: _onAlertSelect }: Live
           </div>
           <button
             type="button"
-            onClick={() => setErrorMsg(null)}
+            onClick={handleDismiss}
             className="hover:opacity-80 p-0.5 cursor-pointer text-inherit ml-2"
             title="Dismiss notice"
           >
