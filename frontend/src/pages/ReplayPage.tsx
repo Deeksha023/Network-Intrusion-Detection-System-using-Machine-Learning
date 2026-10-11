@@ -83,7 +83,7 @@ export default function ReplayPage() {
   useEffect(() => {
     if (!activeJobId) return
 
-    let timer: NodeJS.Timeout | null = null
+    let timer: ReturnType<typeof setTimeout> | null = null
 
     const check = async () => {
       const st = await pollJobStatus(activeJobId)

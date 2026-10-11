@@ -1,3 +1,4 @@
+import { useState, useEffect, useCallback } from 'react'
 import { Play, Square, Wifi, AlertTriangle, X } from 'lucide-react'
 import apiClient from '../api/client'
 import type { NetworkInterface, MonitorStatus, Alert } from '../types'
